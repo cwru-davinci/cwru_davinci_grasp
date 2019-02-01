@@ -54,6 +54,21 @@ struct GraspInfo
 {
   Eigen::Affine3d grasp_pose;
   int part_id;
+  struct GraspParamInfo
+  {
+    int param_0_index;
+    int param_1_index;
+    int param_2_index;
+    int param_3_index;
+    int grasp_id;
+  };
+  GraspParamInfo graspParamInfo;
+  double theta_diff_avg;
+
+  bool operator<(const GraspInfo& otherGrasp) const
+  {
+    return theta_diff_avg < otherGrasp.theta_diff_avg;
+  }
 };
 
 /**

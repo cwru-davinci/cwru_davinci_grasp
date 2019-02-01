@@ -268,8 +268,8 @@ bool DavinciSimpleNeedleGrasper::planNeedleRelease(const geometry_msgs::Pose &ne
   // Retreat
   moveit_msgs::GripperTranslation post_place_retreat;
   post_place_retreat.direction.header.stamp = ros::Time::now();
-  post_place_retreat.desired_distance = needleGraspData_.approach_retreat_desired_dist_; // The distance the origin of a robot link needs to travel
-  post_place_retreat.min_distance = needleGraspData_.approach_retreat_min_dist_; // half of the desired? Untested.
+  post_place_retreat.desired_distance = needleGraspData_.retreat_desired_dist_; // The distance the origin of a robot link needs to travel
+  post_place_retreat.min_distance = needleGraspData_.retreat_min_dist_; // half of the desired? Untested.
   post_place_retreat.direction.header.frame_id = needleGraspData_.ee_tool_tip_link_;
   post_place_retreat.direction.vector.x = 0;
   post_place_retreat.direction.vector.y = 0;
@@ -300,8 +300,9 @@ std::vector<moveit_msgs::Grasp> DavinciSimpleNeedleGrasper::getAllPossibleNeedle
   return possible_grasps_msgs_;
 }
 
-std::vector<GraspInfo> DavinciSimpleNeedleGrasper::getAllPossibleNeedleGrasps() const
+std::vector<GraspInfo> DavinciSimpleNeedleGrasper::getAllPossibleNeedleGrasps()
 {
+  simpleNeedleGraspGenerator_->graspGeneratorHelper(needle_pose_, needleGraspData_, possible_grasps_);
   return possible_grasps_;
 }
 
@@ -544,8 +545,8 @@ moveit_msgs::MoveItErrorCodes DavinciSimpleNeedleGrasper::placeNeedleHelper(cons
       // Approach
       moveit_msgs::GripperTranslation pre_place_approach;
       pre_place_approach.direction.header.stamp = ros::Time::now();
-      pre_place_approach.desired_distance = needleGraspData_.approach_retreat_desired_dist_; // The distance the origin of a robot link needs to travel
-      pre_place_approach.min_distance = needleGraspData_.approach_retreat_min_dist_; // half of the desired? Untested.
+      pre_place_approach.desired_distance = needleGraspData_.approach_desired_dist_; // The distance the origin of a robot link needs to travel
+      pre_place_approach.min_distance = needleGraspData_.approach_min_dist_; // half of the desired? Untested.
       pre_place_approach.direction.header.frame_id = needleGraspData_.ee_tool_tip_link_;
       pre_place_approach.direction.vector.x = 0;
       pre_place_approach.direction.vector.y = 0;
@@ -555,8 +556,8 @@ moveit_msgs::MoveItErrorCodes DavinciSimpleNeedleGrasper::placeNeedleHelper(cons
       // Retreat
       moveit_msgs::GripperTranslation post_place_retreat;
       post_place_retreat.direction.header.stamp = ros::Time::now();
-      post_place_retreat.desired_distance = 0.0; // The distance the origin of a robot link needs to travel
-      post_place_retreat.min_distance = 0.0; // half of the desired? Untested.
+      post_place_retreat.desired_distance = needleGraspData_.retreat_desired_dist_; // The distance the origin of a robot link needs to travel
+      post_place_retreat.min_distance = needleGraspData_.retreat_min_dist_; // half of the desired? Untested.
       post_place_retreat.direction.header.frame_id = needleGraspData_.ee_tool_tip_link_;
       post_place_retreat.direction.vector.x = 0;
       post_place_retreat.direction.vector.y = 0;

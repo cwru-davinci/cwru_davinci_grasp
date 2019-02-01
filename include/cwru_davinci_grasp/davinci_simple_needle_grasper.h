@@ -63,13 +63,6 @@
 namespace cwru_davinci_grasp
 {
 
-//struct NeedleModel
-//{
-//  std::string name;
-//  geometry_msgs::Pose start_pose;
-//  geometry_msgs::Pose goal_pose;
-//};
-
 //  scoped enum definition for user to choose needle pick mode
 enum class NeedlePickMode { RANDOM, DEFINED };
 
@@ -83,8 +76,8 @@ private:
 public:
   DavinciSimpleNeedleGrasper(const ros::NodeHandle &nh,
                              const ros::NodeHandle &nh_priv,
-                             const std::string &planning_group_name,
                              const std::string &needle_name,
+                             const std::string &planning_group_name,
                              const std::string &get_planning_scene_service = "get_planning_scene",
                              const std::string &set_planning_scene_topic = "planning_scene",
                              const std::string &updated_needle_pose_topic = "updated_needle_pose");
@@ -143,7 +136,7 @@ public:
    */
   std::vector<moveit_msgs::Grasp> getAllPossibleNeedleGraspsList() const;
 
-  std::vector<GraspInfo> getAllPossibleNeedleGrasps() const;
+  std::vector<GraspInfo> getAllPossibleNeedleGrasps();
 
 //  /**
 //   * @brief get the defind needle grasp message
