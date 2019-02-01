@@ -80,7 +80,7 @@ int main(int argc, char** argv)
   geometry_msgs::PoseStamped needle_pose;
   needle_pose.header.stamp = ros::Time::now();
   needle_pose.header.frame_id = "world";
-  needle_pose.pose.position.x = -0.248;
+  needle_pose.pose.position.x = 0.248;
   needle_pose.pose.position.y = 0.0;
   needle_pose.pose.position.z = 0.45;
   needle_pose.pose.orientation.w = 1;

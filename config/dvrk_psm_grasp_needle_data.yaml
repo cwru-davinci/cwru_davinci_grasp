@@ -21,19 +21,34 @@ psm_one_gripper:
 
     end_effector_tool_tip_link: 'PSM1_tool_tip_link'
 
-        #normal needle grasping parameters
-    theta_normal : [0.003, 0.0, 0.0, 0.1633]
+    #normal needle grasping parameters
+    theta_normal : [0.004, 0.0, 0.0, 0.0833]
 
     #grasping parameters limits
-    theta_limits : [0.0029, 0.0031, -0.001, 0.001, -0.001, 0.001, 0.05, 0.11]
+    theta_limits : [0.002, 0.005, -3.1415, 0.0, -3.1415, 0.0, 0.2618, 3.1415]
 
     #possible needle grasping search resolution
-    theta_resolution : [0.00005, 0.0005 ,0.0005, 0.03]
+    theta_resolution : [0.001, 0.628 ,1.047, 0.628]
+
+    #normal needle grasping parameters
+    #theta_normal : [0.003, 0.0, 0.0, 0.1633]
+
+    #grasping parameters limits
+    #theta_limits : [0.0029, 0.0031, -0.001, 0.001, -0.001, 0.001, 0.05, 0.11]
+
+    #possible needle grasping search resolution
+    #theta_resolution : [0.00005, 0.0005 ,0.0005, 0.03]
     #theta_resolution : [0.001, 0.2094, 0.1047, 0.2094]
 
-    approach_retreat_desired_dist : 0.008
+    theta_weight : [1.0, 100.0, 0.1, 0.1]
 
-    approach_retreat_min_dist : 0.005
+    approach_desired_dist : 0.008
+
+    approach_min_dist : 0.005
+
+    retreat_desired_dist: 0.0
+
+    retreat_min_dist: 0.0
 
     angle_resolution : 16
 
@@ -66,8 +81,14 @@ psm_two_gripper:
     theta_resolution : [0.001, 0.2094, 0.2094, 0.2094]
     #theta_resolution : [0.001, 0.2094, 0.1047, 0.2094]
 
-    approach_retreat_desired_dist : 0.008
+    theta_weight : [1.0, 100.0, 0.1, 0.1]
 
-    approach_retreat_min_dist : 0.005
+    approach_desired_dist : 0.008
+
+    approach_min_dist : 0.005
+
+    retreat_desired_dist: 0.0
+
+    retreat_min_dist: 0.0
 
     angle_resolution : 16

@@ -118,14 +118,6 @@ int main(int argc, char** argv)
       if(!needleGrasper.pickNeedle(needle_name, NeedlePickMode::DEFINED))
       {
         ROS_INFO("Main function: failed to perform DEFINED needle pick up, now try random needle pick up");
-        // // try random needle pick up
-        // if (!needleGrasper.pickNeedle(needle_name, NeedlePickMode::RANDOM))
-        // {
-        //   ROS_INFO("Main function: failed to perform RANDOM needle pick up");
-        //   ros::shutdown();
-        //   return 0;
-        // }
-        // ROS_INFO("Main function: successfully performed RANDOM needle pick up");
         ros::shutdown();
         return 0;
       }
