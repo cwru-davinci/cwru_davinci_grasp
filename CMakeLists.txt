@@ -21,7 +21,13 @@ find_package(catkin REQUIRED COMPONENTS
   moveit_ros_planning_interface
   moveit_core
   moveit_visual_tools
+  actionlib_msgs
+  uv_control
+  uv_msgs
+  gazebo_state_plugins
   )
+
+find_package(gazebo REQUIRED)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -74,17 +80,16 @@ add_definitions(${baselib_binding_DEFINITIONS} ${convenience_ros_functions_DEFIN
 # )
 
 ## Generate actions in the 'action' folder
-#add_action_files(DIRECTORY action
-#  FILES
-#  Grasp.action
-#  GraspControl.action
-#  )
+add_action_files(
+  DIRECTORY action
+  FILES NeedleGrasp.action
+)
 
 ## Generate added messages and services with any dependencies listed here
-##generate_messages(
-##  DEPENDENCIES
-##  std_msgs sensor_msgs geometry_msgs moveit_msgs trajectory_msgs
-#)
+generate_messages(
+  DEPENDENCIES
+  actionlib_msgs std_msgs geometry_msgs
+)
 
 ################################################
 ## Declare ROS dynamic reconfigure parameters ##
@@ -118,9 +123,9 @@ add_definitions(${baselib_binding_DEFINITIONS} ${convenience_ros_functions_DEFIN
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES cwru_davinci_grasp
-  CATKIN_DEPENDS roscpp std_msgs sensor_msgs geometry_msgs moveit_msgs trajectory_msgs moveit_visual_tools
-                cwru_davinci_moveit_object_handling
-  #  DEPENDS system_lib
+  CATKIN_DEPENDS roscpp std_msgs actionlib_msgs sensor_msgs geometry_msgs moveit_msgs trajectory_msgs moveit_visual_tools
+                cwru_davinci_moveit_object_handling uv_msgs gazebo_state_plugins
+  # DEPENDS
 )
 
 ###########
@@ -132,13 +137,19 @@ catkin_package(
 include_directories(
   include
   ${catkin_INCLUDE_DIRS}
+  ${GAZEBO_INCLUDE_DIRS}
 )
 
 ## Declare a C++ library
 add_library(cwru_davinci_grasp
+  src/davinci_needle_grasper_base.cpp
   src/davinci_simple_needle_grasper.cpp
   src/davinci_needle_grasp_data.cpp
-  src/davinci_simple_grasp_generator.cpp)
+  src/davinci_simple_grasp_generator.cpp
+  src/davinci_needle_grasper_action_server.cpp)
+#add_library(davinci_needle_grasper_action_server src/davinci_needle_grasper_action_server.cpp)
+
+add_library(davinci_needle_pose_publisher src/davinci_needle_pose_publisher)
 
 # add_dependencies(davinci_simple_grasp_action_server ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
@@ -152,7 +163,13 @@ add_library(cwru_davinci_grasp
 ## The recommended prefix ensures that target names across packages don't collide
 add_executable(davinci_simple_needle_grasp_test_node test/davinci_simple_needle_grasp_test_node.cpp)
 add_executable(davinci_simple_needle_grasper_main src/davinci_simple_needle_grasper_main.cpp)
-add_executable(davinci_needle_pose_publisher test/davinci_needle_pose_publisher.cpp)
+add_executable(davinci_needle_pose_publisher_main test/davinci_needle_pose_publisher_main.cpp)
+add_executable(davinci_test_grasping_main src/davinci_test_grasping_main.cpp)
+add_executable(davinci_needle_grasper_action_server_main src/davinci_needle_grasper_action_server_main.cpp)
+add_executable(davinci_grasp_info_writer src/davinci_grasp_info_writer.cpp)
+add_executable(davinci_needle_pose_perturber test/davinci_needle_pose_perturber.cpp)
+add_executable(needle_perturbation_statistics test/needle_perturbation_statistics.cpp)
+
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -162,18 +179,21 @@ add_executable(davinci_needle_pose_publisher test/davinci_needle_pose_publisher.
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
-# add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(cwru_davinci_grasp ${PROJECT_NAME}_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
 #target_link_libraries(davinci_simple_grasp_generator ${catkin_LIBRARIES})
 
 #target_link_libraries(davinci_simple_grasp_action_server ${catkin_LIBRARIES})
-target_link_libraries(cwru_davinci_grasp  ${catkin_LIBRARIES} ${Boost_LIBRARIES})
+target_link_libraries(cwru_davinci_grasp ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 target_link_libraries(davinci_simple_needle_grasp_test_node cwru_davinci_grasp  ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 target_link_libraries(davinci_simple_needle_grasper_main cwru_davinci_grasp  ${catkin_LIBRARIES} ${Boost_LIBRARIES})
-target_link_libraries(davinci_needle_pose_publisher ${catkin_LIBRARIES})
-
-
+target_link_libraries(davinci_needle_pose_publisher_main davinci_needle_pose_publisher ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
+target_link_libraries(davinci_test_grasping_main cwru_davinci_grasp  ${catkin_LIBRARIES} ${Boost_LIBRARIES})
+target_link_libraries(davinci_needle_grasper_action_server_main cwru_davinci_grasp ${catkin_LIBRARIES})
+target_link_libraries(davinci_grasp_info_writer cwru_davinci_grasp ${catkin_LIBRARIES})
+target_link_libraries(davinci_needle_pose_perturber davinci_needle_pose_publisher ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
+target_link_libraries(needle_perturbation_statistics davinci_needle_pose_publisher ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
 
 #############
 ## Install ##

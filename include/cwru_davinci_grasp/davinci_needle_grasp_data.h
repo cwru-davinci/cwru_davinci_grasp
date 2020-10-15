@@ -62,6 +62,8 @@ public:
   std::string ee_tool_tip_link_;
   std::string ee_group_;       // the end effector name
 
+  std::string needle_mesh_model_path_;
+
   int angle_resolution_; // generate grasps at PI/angle_resolution increments
 
   double grasp_theta_0_; // the grasp parameter theta_0_ defined by needle
@@ -98,11 +100,11 @@ public:
   double grasp_theta_3_max_;
 
   double weight_0_;
-
+  
   double weight_1_;
-
+  
   double weight_2_;
-
+  
   double weight_3_;
 
   std::vector<double> grasp_theta_0_list_;

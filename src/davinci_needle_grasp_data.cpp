@@ -89,6 +89,18 @@ bool DavinciNeedleGraspData::loadRobotGraspData(const ros::NodeHandle &nh,
   }
   nh.getParam("needle_radius", needle_radius_);
 
+  if (!nh.hasParam("needle_mesh_mode_path"))
+  {
+    ROS_ERROR_STREAM_NAMED("grasp_data_loader",
+                           "Grasp configuration parameter `needle_mesh_mode_path` missing "
+                             "from rosparam server. "
+                             "Did you load your end effector's configuration "
+                             "yaml file? Searching in namespace: "
+                             << nh.getNamespace());
+    return false;
+  }
+  nh.getParam("needle_mesh_mode_path", needle_mesh_model_path_);
+
   // Search within the sub-namespace of this end effector name
   ros::NodeHandle child_nh(nh, end_effector);
 
@@ -307,7 +319,6 @@ bool DavinciNeedleGraspData::loadRobotGraspData(const ros::NodeHandle &nh,
                XmlRpc::XmlRpcValue::TypeDouble);
     theta_weight.push_back(static_cast<double>(theta_weight_list[i]));
   }
-
   // -------------------------------
   // Create pre-grasp posture if specified
   if (!pre_grasp_posture.empty())

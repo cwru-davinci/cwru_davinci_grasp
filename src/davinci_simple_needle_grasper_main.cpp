@@ -39,7 +39,6 @@
 #include <iostream>
 
 #include <moveit/move_group_interface/move_group_interface.h>
-#include <moveit/planning_scene_interface/planning_scene_interface.h>
 #include <moveit/planning_scene_monitor/planning_scene_monitor.h>
 // Grasp generation and visualization
 #include <cwru_davinci_grasp/davinci_simple_needle_grasper.h>
@@ -79,7 +78,7 @@ int main(int argc, char** argv)
   ros::NodeHandle node_handle_priv("~");
 
   ros::AsyncSpinner spinner(1);
-  ros::Duration(5.0).sleep();
+  ros::Duration(3.0).sleep();
   spinner.start();
 
   // class for publishing stuff to rviz
@@ -103,25 +102,51 @@ int main(int argc, char** argv)
 
   DavinciSimpleNeedleGrasper needleGrasper(node_handle,
                                            node_handle_priv,
-                                           needle_name,
-                                           which_arm);
+                                           which_arm,
+                                           needle_name);
 
   if (!is_place)
   {
     int pick_mode = 0;
 
-    std::cout << "How do you want to pick needle 0 for defined pick, other number is for random pic: ";
+    std::cout << "How do you want to pick needle 0 for DEFINED pick, 1 for SUBOPTIMAL pick, 2 for FINDGOOD pick, other number is for RANDOM pick: ";
     std::cin >> pick_mode;
     if (pick_mode == 0)
     {
       // defined needle pick up
       if(!needleGrasper.pickNeedle(needle_name, NeedlePickMode::DEFINED))
       {
-        ROS_INFO("Main function: failed to perform DEFINED needle pick up, now try random needle pick up");
+        ROS_INFO("Main function: failed to perform DEFINED needle pick up");
         ros::shutdown();
         return 0;
       }
       ROS_INFO("Main function: successfully performed DEFINED needle pick up");
+    }
+    else if(pick_mode == 1)
+    {
+      // defined needle pick up
+      if(!needleGrasper.pickNeedle(needle_name, NeedlePickMode::SUBOPTIMAL))
+      {
+        ROS_INFO("Main function: failed to perform SUBOPTIMAL needle pick up");
+        ros::shutdown();
+        return 0;
+      }
+      ROS_INFO("Main function: successfully performed SUBOPTIMAL needle pick up");
+      ROS_INFO("Main function: the selected grasp index is: %d",
+               needleGrasper.getSelectedGraspInfo().graspParamInfo.grasp_id);
+    }
+    else if(pick_mode == 2)
+    {
+      // defined needle pick up
+      if(!needleGrasper.pickNeedle(needle_name, NeedlePickMode::FINDGOOD))
+      {
+        ROS_INFO("Main function: failed to perform FINDGOOD needle pick up");
+        ros::shutdown();
+        return 0;
+      }
+      ROS_INFO("Main function: successfully performed FINDGOOD needle pick up");
+      ROS_INFO("Main function: the selected grasp index is: %d",
+               needleGrasper.getSelectedGraspInfo().graspParamInfo.grasp_id);
     }
     else
     {
@@ -133,6 +158,8 @@ int main(int argc, char** argv)
         return 0;
       }
       ROS_INFO("Main function: successfully performed RANDOM needle pick up");
+      ROS_INFO("Main function: the selected grasp index is: %d",
+               needleGrasper.getSelectedGraspInfo().graspParamInfo.grasp_id);
     }
   }
   else
@@ -151,7 +178,7 @@ int main(int argc, char** argv)
     needle_pose_goal.position.y = y;
     needle_pose_goal.position.z = z;
 
-    if(!needleGrasper.placeNeedle(needle_pose_goal, needle_name))
+    if(!needleGrasper.placeNeedle(needle_name, needle_pose_goal, false))
     {
       ROS_INFO("Main function: failed to place needle");
       ros::shutdown();
@@ -160,31 +187,6 @@ int main(int argc, char** argv)
     ROS_INFO("Main function: successfully placed needle to a new location");
   }
 
-//  planning_scene_monitor::PlanningSceneMonitorPtr pMonitor;
-//  pMonitor.reset(new planning_scene_monitor::PlanningSceneMonitor("robot_description"));
-//  pMonitor->requestPlanningSceneState();
-//  planning_scene_monitor::LockedPlanningSceneRO ls(pMonitor);
-////  ls->getCurrentStateNonConst().update();
-//  robot_state::RobotState rstate = ls->getCurrentState();
-//  std::vector<double> group_variable_values1;
-//
-//  rstate.copyJointGroupPositions("psm_one", group_variable_values1);
-//  const robot_state::JointModelGroup *joint_model_group1 =
-//                  rstate.getJointModelGroup("psm_one");
-//
-//  std::vector<std::string> group_name1 = joint_model_group1->getActiveJointModelNames();
-//
-//  std::string tip_link_name = joint_model_group1->getOnlyOneEndEffectorTip()->getName();
-//
-//  std::vector<double> group_variable_values2;
-//
-//  rstate.copyJointGroupPositions("psm_two", group_variable_values2);
-//  const robot_state::JointModelGroup *joint_model_group2 =
-//                  rstate.getJointModelGroup("psm_two");
-//
-//  std::vector<std::string> group_name2 = joint_model_group2->getActiveJointModelNames();
-//  std::ostream & out = std::cout;
-//  ls->printKnownObjects	(out);
   ros::Duration(3.0).sleep();
   ros::shutdown();
   return 0;
